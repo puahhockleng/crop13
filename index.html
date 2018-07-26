@@ -1,176 +1,24 @@
 <!DOCTYPE html>
+<html>
 <head>
-    <title>Photo Edit</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <script src="https://code.jquery.com/jquery-3.3.1.js"
-			integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-			crossorigin="anonymous">
-    </script>
-    <script src="https://web.archive.org/web/20140814064901/http://www.nihilogic.dk/labs/exif/exif.js"></script>
-    <script src="https://web.archive.org/web/20140814064903/http://www.nihilogic.dk/labs/binaryajax/binaryajax.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/2.3.4/cropper.min.js"></script>
 
-<script>
-// Wrapper around MPL-licensed http://www.nihilogic.dk/labs/binaryajax/binaryajax.js
-// to support JavaScript typed arrays since binary strings are not supported in IE 10
-var createBinaryFile = function(uintArray) {
-    var data = new Uint8Array(uintArray);
-    var file = new BinaryFile(data);
-    file.getByteAt = function(iOffset) {
-        return data[iOffset];
-    };
-    file.getBytesAt = function(iOffset, iLength) {
-        var aBytes = [];
-        for (var i = 0; i < iLength; i++) {
-            aBytes[i] = data[iOffset  + i];
-        }
-        return aBytes;
-    };
-    file.getLength = function() {
-        return data.length;
-    };
-    return file;
-};
-// The actual page logic
-
-    $(document).on('ready', function() {
-        $('#PhotoButton').click(function() {
-            $('#PhotoPicker').trigger('click');
-            return false;
-        });
-        $('#PhotoPicker').on('change', function(e) {
-            e.preventDefault();
-            if(this.files.length === 0) return;
-            var imageFile = this.files[0];
-            var img = new Image();
-            var url = window.URL ? window.URL : window.webkitURL;
-            img.src = url.createObjectURL(imageFile);
-            img.onload = function(e) {
-                url.revokeObjectURL(this.src);
-                var width;
-                var height;
-                var binaryReader = new FileReader();
-                binaryReader.onloadend=function(d) {
-                    var exif, transform = "none";
-                    exif=EXIF.readFromBinaryFile(createBinaryFile(d.target.result));
-                    if(exif.Orientation === 8) {
-                        width = img.height;
-                        height = img.width;
-                        transform = "left";
-                    } else if(exif.Orientation === 6) {
-                        width = img.height;
-                        height = img.width;
-                        transform = "right";
-                    } else if(exif.Orientation === 1) {
-                        width = img.width;
-                        height = img.height;
-                    } else if(exif.Orientation === 3) {
-                        width = img.width;
-                        height = img.height;
-                        transform = "flip";
-                    } else {
-                        width = img.width;
-                        height = img.height;
-                    }
-                    var MAX_WIDTH = 700;
-                    var MAX_HEIGHT = 600;
-                    if (width/MAX_WIDTH > height/MAX_HEIGHT) {
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
-                        }
-                    } else {
-                        if (height > MAX_HEIGHT) {
-                            width *= MAX_HEIGHT / height;
-                            height = MAX_HEIGHT;
-                        }
-                    }
-                    var canvas = $('#PhotoEdit')[0];
-                    canvas.width = width;
-                    canvas.height = height;
-                    var ctx = canvas.getContext("2d");
-                    ctx.fillStyle = 'white';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    if(transform === 'left') {
-                        ctx.setTransform(0, -1, 1, 0, 0, height);
-                        ctx.drawImage(img, 0, 0, height, width);
-                    } else if(transform === 'right') {
-                        ctx.setTransform(0, 1, -1, 0, width, 0);
-                        ctx.drawImage(img, 0, 0, height, width);
-                    } else if(transform === 'flip') {
-                        ctx.setTransform(1, 0, 0, -1, 0, height);
-                        ctx.drawImage(img, 0, 0, width, height);
-                    } else {
-                        ctx.setTransform(1, 0, 0, 1, 0, 0);
-                        ctx.drawImage(img, 0, 0, width, height);
-                    }
-                    ctx.setTransform(1, 0, 0, 1, 0, 0);
-                };
-                binaryReader.readAsArrayBuffer(imageFile);
-            };
-        });
-        $('#ProcessButton').click(function() {
-            var canvas = $('#PhotoEdit')[0];
-            var ctx = canvas.getContext("2d");
-            var pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            var r, g, b, i;
-            for (var py = 0; py < pixels.height; py += 1) {
-                for (var px = 0; px < pixels.width; px += 1) {
-                    i = (py*pixels.width + px)*4;
-                    r = pixels.data[i];
-                    g = pixels.data[i+1];
-                    b = pixels.data[i+2];
-                    if(g > 100 && g > r*1.35 && g > b*1.6) pixels.data[i+3] = 0;
-                }
-            }
-            ctx.putImageData(pixels, 0, 0);
-            var data = canvas.toDataURL('image/png');
-            setTimeout(function() {alert("Modified Image Data: "+data.substring(0, 30)+"...");}, 100);
-            // Do something with the image file now...
-            return false;
-        });
-
-        $('#PhotoEdit').cropper({
-            aspectRatio: 16 / 9,
-            crop: function(e) {
-                // Output the result data for cropping image.
-                console.log(e.x);
-                console.log(e.y);
-                console.log(e.width);
-                console.log(e.height);
-                console.log(e.rotate);
-                console.log(e.scaleX);
-                console.log(e.scaleY);
-        }
-});
-    });
-
-</script>
+    <title>Photo taking and cropping tool</title>
 </head>
-<body>
-<div class="w3-container w3-teal">
-    <h1>Photo Cropping and Resizing</h1>
-</div>
-              
-<div class="w3-container">
-    <div style="width: 0; height: 0; overflow: hidden;">
-        <input type="file" id="PhotoPicker"
-               accept="image/*" capture="camera">
-    </div>
-    <p><button id="PhotoButton">1. Select Photo</button></p>
-    <p><button id="ProcessButton">2. Process Photo</button></p>
 
+<body>
+
+<div id="container">
+
+    <h1>Take a photo</h1>
+
+    <video playsinline autoplay></video>
+    <button>Take snapshot</button>
+    <canvas></canvas>
 </div>
-<div class="w3-display-container w3-text-white">
-<canvas id="PhotoEdit" width="240" height="320" style="border:1px solid #000000;">
-        <p><font color="white">This browser does not support the required features.
-                Please try
-                <a href="http://windows.microsoft.com/en-us/internet-explorer/products/ie/home">Internet Explorer 10</a>,
-                or a current version of
-                <a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a>,
-                <a href="http://www.google.com/chrome">Chrome</a>, or
-                <a href="http://www.apple.com/safari/">Safari</a>.</font></p>
-</canvas>
-</div>
+
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script src="https://webrtc.github.io/samples/src/content/getusermedia/canvas/js/main.js" async></script>
+
+
 </body>
+</html>
