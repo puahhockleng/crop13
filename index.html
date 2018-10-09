@@ -26,17 +26,7 @@
 <body>
 
 <div class="container-fluid">
-    <p id="hints" class="mb-1">Select a photo from your device to crop.</p>
-    <div class="input-group my-0">
-        <input id="fileTocrop" type="file" class="form-control"  aria-describedby="basic-addon2">
-    </div>
 
-    <div class="input-group mb-1">
-        <input id="fileTosave" type="text" class="form-control" placeholder="NRIC no. Eg T1111111Z" aria-label="NRIC no. Eg T1111111Z" aria-describedby="basic-addon2">
-        <div class="input-group-append">
-          <span id="labelTosave" class="input-group-text" id="basic-addon2">.jpg</span>
-        </div>
-    </div>
 
     <div class="row">
         <div id="col2">
@@ -50,6 +40,18 @@
         </div>
     </div>
 
+    <p id="hints" class="mb-1">Select a photo from your device to crop.</p>
+    <div class="input-group my-0">
+        <input id="fileTocrop" type="file" class="form-control"  aria-describedby="basic-addon2">
+    </div>
+
+    <div class="input-group mb-1">
+        <input id="fileTosave" type="text" class="form-control" placeholder="NRIC no. Eg T1111111Z" aria-label="NRIC no. Eg T1111111Z" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <span id="labelTosave" class="input-group-text" id="basic-addon2">.jpg</span>
+        </div>
+    </div>
+    
     <div class="fixed-bottom">
         <button class="btn btn-primary btn-lg" id="btnRotate" disabled>Rotate photo</button>
         <button class="btn btn-primary btn-lg" id="btnClearrect" disabled>Clear rectangle</button>
