@@ -20,12 +20,24 @@
             width: 80%;
             height: auto;
         }
+        
+        #gettingstarted {
+            width: 100%;
+            height: auto;
+        }
         @media only screen and (min-width: 500px) { 
             canvas {
                 width: 400px;
                 height: auto;
             }
+
+            #gettingstarted {
+                width: 500px;
+                height: auto;
+            }
         }
+
+
         #myCanvasTop { position: absolute; z-index: 2}
         #myCanvas    { position: absolute; z-index: 1}
 
@@ -60,7 +72,7 @@
     <div class="alert alert-primary" role="alert" id="alert1">
         This application works best on Chrome on Android phones, Safari on iPhones/iPads and Chrome on Desktop computers/Laptops.
         
-        <img style ='width:100%; height:auto;' src='https://puahhockleng.github.io/photocrop/gettingstarted.gif' alt='demo' >
+        <img id='gettingstarted' src='https://puahhockleng.github.io/photocrop/gettingstarted.gif' alt='demo' >
     </div>
 
     <div class="alert alert-danger" role="alert" id="alert2">
